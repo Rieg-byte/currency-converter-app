@@ -1,2 +1,2 @@
-# currency-exchange-app
+# currency-converter-app
 Индивидуальный проект. 
