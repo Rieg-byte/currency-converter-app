@@ -1,8 +1,8 @@
-package com.example.currencyconverterapp.ui.screens.home
+package com.example.currencyconverterapp.ui.screens.currencyList
 
 import com.example.currencyconverterapp.data.model.Currency
 
-data class HomeUiState(
+data class CurrencyListUiState(
     val amount: String = "",
     val inputCurrency: String = "USD",
     val outputCurrency: String = "RUB",
