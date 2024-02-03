@@ -6,10 +6,6 @@ import javax.inject.Inject
 
 class CurrencyRepositoryImpl @Inject constructor(private val currencyRemoteDataSource: CurrencyRemoteDataSourceImpl) : CurrencyRepository {
     override suspend fun getCurrencyList(): List<Currency> {
-        return currencyRemoteDataSource.getCurrencyData().currency.values.toList()
-    }
-    override suspend fun getValute(charCode: String): Currency? {
-        val result = currencyRemoteDataSource.getCurrencyData()
-        return result.currency[charCode]
+        return currencyRemoteDataSource.getCurrencyList().currency.values.toList()
     }
 }
