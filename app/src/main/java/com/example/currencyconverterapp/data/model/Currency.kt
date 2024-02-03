@@ -1,10 +1,10 @@
-package com.example.currencyconverterapp.data.remote.model
+package com.example.currencyconverterapp.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Valute(
+data class Currency(
     @SerialName("ID") val id: String,
     @SerialName("NumCode") val numCode: String,
     @SerialName("CharCode") val charCode: String,

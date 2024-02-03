@@ -1,4 +1,4 @@
-package com.example.currencyconverterapp.data.remote.model
+package com.example.currencyconverterapp.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -9,5 +9,5 @@ data class CurrencyData(
     @SerialName("PreviousDate") val previousDate: String,
     @SerialName("PreviousURL") val previousURL: String,
     @SerialName("Timestamp") val timestamp: String,
-    @SerialName("Valute") val valute: Map<String, Valute>
+    @SerialName("Valute") val currency: Map<String, Currency>
 )

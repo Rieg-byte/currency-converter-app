@@ -3,12 +3,12 @@ package com.example.currencyconverterapp.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.currencyconverterapp.data.repository.CurrencyRepositoryImpl
-import com.example.currencyconverterapp.util.ResultStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -57,36 +57,34 @@ class HomeViewModel @Inject constructor(private val currencyRepository: Currency
     }
 
     private fun getCurrencyList() = viewModelScope.launch {
-        when(val result = currencyRepository.getCurrencyList()){
-            is ResultStatus.Success -> {
-                _homeUiState.update { value ->
-                    value.copy(
-                        listOfCurrency = result.data ?: emptyList()
-                    )
-                }
+        try {
+            val result = currencyRepository.getCurrencyList()
+            _homeUiState.update { value ->
+                value.copy(
+                    listOfCurrency = result
+                )
             }
-            is ResultStatus.Error -> {
-                _homeUiState.update { value ->
-                    value.copy(
-                        listOfCurrency = emptyList()
-                    )
-                }
+        } catch (e: IOException) {
+            _homeUiState.update { value ->
+                value.copy(
+                    listOfCurrency = emptyList()
+                )
             }
         }
 
     }
     fun updateInputCurrency(charCode: String) = viewModelScope.launch {
-        when(val result = currencyRepository.getValute(charCode)) {
-            is ResultStatus.Success -> {
-                _homeUiState.update {
-                        it.copy(
-                            inputCurrency = charCode,
-                            currentRate = result.data?.value ?: 0.0
-                        )
-                    }
-                updateAmount()
+        try {
+            val result = currencyRepository.getValute(charCode)
+            _homeUiState.update {
+                it.copy(
+                    inputCurrency = charCode,
+                    currentRate = result?.value ?: 0.0
+                )
             }
-            is ResultStatus.Error -> {}
+            updateAmount()
+        } catch (e: IOException) {
+
         }
     }
 }

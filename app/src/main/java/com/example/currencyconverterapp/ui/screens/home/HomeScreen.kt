@@ -45,7 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.currencyconverterapp.data.remote.model.Valute
+import com.example.currencyconverterapp.data.model.Currency
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -138,9 +138,9 @@ fun CurrencyField(
 fun CurrencyModalBottomSheet(
     modifier: Modifier = Modifier,
     onDismissRequest: () -> Unit = {},
-    onClick: (Valute) -> Unit,
+    onClick: (Currency) -> Unit,
     sheetState: SheetState,
-    items: List<Valute>
+    items: List<Currency>
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -163,7 +163,7 @@ fun CurrencyModalBottomSheet(
 @Composable
 fun CurrencyItem(
     modifier: Modifier = Modifier,
-    valute: Valute,
+    valute: Currency,
     onClick: () -> Unit = {}
 ) {
     Column(
