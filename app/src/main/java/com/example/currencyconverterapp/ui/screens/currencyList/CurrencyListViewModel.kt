@@ -14,32 +14,26 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CurrencyListViewModel @Inject constructor(private val currencyRepository: CurrencyRepositoryImpl): ViewModel() {
-    private val _homeUiState = MutableStateFlow(CurrencyListUiState())
-    val homeUiState = _homeUiState.asStateFlow()
+    private val _currencyListUiState = MutableStateFlow<CurrencyListUiState>(CurrencyListUiState.Loading)
+    val currencyListUiState = _currencyListUiState.asStateFlow()
     init {
         getCurrencyList()
     }
 
+    fun repeat() {
+        getCurrencyList()
+    }
     private fun getCurrencyList() = viewModelScope.launch {
         try {
+            _currencyListUiState.value = CurrencyListUiState.Loading
             val result = currencyRepository.getCurrencyList()
-            _homeUiState.update {
-                it.copy(
-                    listOfCurrency = result
-                )
-            }
+            _currencyListUiState.value = CurrencyListUiState.Success(
+                listOfCurrency = result
+            )
         } catch (e: IOException) {
-            _homeUiState.update {
-                it.copy(
-                    listOfCurrency = emptyList()
-                )
-            }
+            _currencyListUiState.value = CurrencyListUiState.Error
         } catch (e: HttpException) {
-            _homeUiState.update {
-                it.copy(
-                    listOfCurrency = emptyList()
-                )
-            }
+            _currencyListUiState.value = CurrencyListUiState.Error
         }
 
     }
