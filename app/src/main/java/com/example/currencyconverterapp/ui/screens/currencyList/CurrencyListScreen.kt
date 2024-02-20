@@ -15,12 +15,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshState
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,33 +37,71 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.currencyconverterapp.R
 import com.example.currencyconverterapp.data.model.Currency
 import com.example.currencyconverterapp.data.model.CurrencyList
+import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrencyListScreen(currencyListViewModel: CurrencyListViewModel = viewModel()) {
     val currencyListUiState by currencyListViewModel.currencyListUiState.collectAsState()
+    val refreshState = rememberPullToRefreshState()
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         CurrencyListBody(
             currencyListUiState = currencyListUiState,
-            onRepeat = currencyListViewModel::repeat
+            currencyListViewModel = currencyListViewModel,
+            refreshState = refreshState
         )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CurrencyListBody(
     currencyListUiState: CurrencyListUiState,
-    onRepeat: () -> Unit,
+    currencyListViewModel: CurrencyListViewModel,
+    refreshState: PullToRefreshState,
 ) {
     when(currencyListUiState) {
         is CurrencyListUiState.Success -> {
-            CurrencyList(currencyListUiState.listOfCurrency)
+            CurrencyList(
+                listOfCurrency = currencyListUiState.listOfCurrency,
+                refreshState = refreshState,
+                refresh = currencyListViewModel::refresh
+            )
         }
-        is CurrencyListUiState.Error -> ErrorScreen(onRepeat)
+        is CurrencyListUiState.Error -> ErrorScreen(currencyListViewModel::repeat)
         is CurrencyListUiState.Loading -> LoadingScreen()
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CurrencyList(
+    listOfCurrency: List<Currency>,
+    refreshState: PullToRefreshState,
+    refresh: () -> Unit
+) {
+    if (refreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            delay(1500)
+            refresh()
+            refreshState.endRefresh()
+        }
+    }
+    Box(modifier = Modifier.nestedScroll(refreshState.nestedScrollConnection)) {
+        LazyColumn() {
+            items(listOfCurrency) {
+                CurrencyCard(it)
+            }
+        }
+        PullToRefreshContainer(
+            modifier = Modifier.align(Alignment.TopCenter),
+            state = refreshState
+        )
+    }
+}
+
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier){
     Box(
@@ -82,15 +126,6 @@ fun ErrorScreen(
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = onRepeat) {
             Text(text = stringResource(id = R.string.repeat))
-        }
-    }
-}
-
-@Composable
-fun CurrencyList(listOfCurrency: List<Currency>) {
-    LazyColumn() {
-        items(listOfCurrency) {
-            CurrencyCard(it)
         }
     }
 }

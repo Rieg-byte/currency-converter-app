@@ -23,6 +23,21 @@ class CurrencyListViewModel @Inject constructor(private val currencyRepository: 
     fun repeat() {
         getCurrencyList()
     }
+
+    fun refresh() = viewModelScope.launch {
+        try {
+            val result = currencyRepository.getCurrencyList()
+            _currencyListUiState.value = CurrencyListUiState.Success(
+                listOfCurrency = result
+            )
+        } catch (e: IOException) {
+            _currencyListUiState.value = CurrencyListUiState.Error
+        } catch (e: HttpException) {
+            _currencyListUiState.value = CurrencyListUiState.Error
+        }
+
+    }
+
     private fun getCurrencyList() = viewModelScope.launch {
         try {
             _currencyListUiState.value = CurrencyListUiState.Loading
