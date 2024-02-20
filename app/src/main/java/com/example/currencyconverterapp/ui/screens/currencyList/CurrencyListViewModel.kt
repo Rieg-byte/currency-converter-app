@@ -6,7 +6,6 @@ import com.example.currencyconverterapp.data.repository.CurrencyRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -35,7 +34,6 @@ class CurrencyListViewModel @Inject constructor(private val currencyRepository: 
         } catch (e: HttpException) {
             _currencyListUiState.value = CurrencyListUiState.Error
         }
-
     }
 
     private fun getCurrencyList() = viewModelScope.launch {
@@ -50,7 +48,5 @@ class CurrencyListViewModel @Inject constructor(private val currencyRepository: 
         } catch (e: HttpException) {
             _currencyListUiState.value = CurrencyListUiState.Error
         }
-
     }
-
 }

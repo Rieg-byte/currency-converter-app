@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.currencyconverterapp.R
 import com.example.currencyconverterapp.data.model.Currency
-import com.example.currencyconverterapp.data.model.CurrencyList
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
