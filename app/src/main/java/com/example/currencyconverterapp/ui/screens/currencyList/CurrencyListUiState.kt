@@ -4,6 +4,7 @@ import com.example.currencyconverterapp.data.model.Currency
 
 sealed interface CurrencyListUiState{
     data class Success(
+        val timestamp: String,
         val listOfCurrency: List<Currency> = emptyList()
     ): CurrencyListUiState
     object Loading: CurrencyListUiState
