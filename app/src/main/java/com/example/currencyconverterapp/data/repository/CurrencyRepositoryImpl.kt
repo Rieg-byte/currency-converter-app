@@ -1,10 +1,10 @@
 package com.example.currencyconverterapp.data.repository
 
 import com.example.currencyconverterapp.data.model.Currency
-import com.example.currencyconverterapp.data.remote.CurrencyRemoteDataSourceImpl
+import com.example.currencyconverterapp.data.remote.CurrencyRemoteDataSource
 import javax.inject.Inject
 
-class CurrencyRepositoryImpl @Inject constructor(private val currencyRemoteDataSource: CurrencyRemoteDataSourceImpl) : CurrencyRepository {
+class CurrencyRepositoryImpl @Inject constructor(private val currencyRemoteDataSource: CurrencyRemoteDataSource) : CurrencyRepository {
     override suspend fun getTimestamp(): String {
         return currencyRemoteDataSource.getCurrencyList().timestamp
     }
