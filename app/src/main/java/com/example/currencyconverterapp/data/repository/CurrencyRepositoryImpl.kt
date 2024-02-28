@@ -5,6 +5,9 @@ import com.example.currencyconverterapp.data.remote.CurrencyRemoteDataSourceImpl
 import javax.inject.Inject
 
 class CurrencyRepositoryImpl @Inject constructor(private val currencyRemoteDataSource: CurrencyRemoteDataSourceImpl) : CurrencyRepository {
+    override suspend fun getTimestamp(): String {
+        return currencyRemoteDataSource.getCurrencyList().timestamp
+    }
     override suspend fun getCurrencyList(): List<Currency> {
         return currencyRemoteDataSource.getCurrencyList().currency.values.toList()
     }
