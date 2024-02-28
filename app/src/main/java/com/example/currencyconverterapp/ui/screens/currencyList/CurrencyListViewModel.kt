@@ -2,7 +2,7 @@ package com.example.currencyconverterapp.ui.screens.currencyList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.currencyconverterapp.data.repository.CurrencyRepositoryImpl
+import com.example.currencyconverterapp.data.repository.CurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
-class CurrencyListViewModel @Inject constructor(private val currencyRepository: CurrencyRepositoryImpl): ViewModel() {
+class CurrencyListViewModel @Inject constructor(private val currencyRepository: CurrencyRepository): ViewModel() {
     private val _currencyListUiState = MutableStateFlow<CurrencyListUiState>(CurrencyListUiState.Loading)
     val currencyListUiState = _currencyListUiState.asStateFlow()
     init {
