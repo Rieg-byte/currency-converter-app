@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,9 +27,11 @@ class CurrencyListViewModel @Inject constructor(private val currencyRepository: 
 
     fun refresh() = viewModelScope.launch {
         try {
-            val result = currencyRepository.getCurrencyList()
+            val timestamp = currencyRepository.getTimestamp()
+            val listOfCurrency = currencyRepository.getCurrencyList()
             _currencyListUiState.value = CurrencyListUiState.Success(
-                listOfCurrency = result
+                timestamp = toNormalFormat(timestamp),
+                listOfCurrency = listOfCurrency
             )
         } catch (e: IOException) {
             _currencyListUiState.value = CurrencyListUiState.Error
@@ -39,8 +43,10 @@ class CurrencyListViewModel @Inject constructor(private val currencyRepository: 
     private fun getCurrencyList() = viewModelScope.launch {
         try {
             _currencyListUiState.value = CurrencyListUiState.Loading
+            val timestamp = currencyRepository.getTimestamp()
             val result = currencyRepository.getCurrencyList()
             _currencyListUiState.value = CurrencyListUiState.Success(
+                timestamp = toNormalFormat(timestamp),
                 listOfCurrency = result
             )
         } catch (e: IOException) {
@@ -49,4 +55,11 @@ class CurrencyListViewModel @Inject constructor(private val currencyRepository: 
             _currencyListUiState.value = CurrencyListUiState.Error
         }
     }
+}
+
+fun toNormalFormat(timestamp: String): String {
+    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")
+    val dateTime = OffsetDateTime.parse(timestamp, inputFormatter)
+    val outputFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm:ss")
+    return outputFormatter.format(dateTime)
 }
