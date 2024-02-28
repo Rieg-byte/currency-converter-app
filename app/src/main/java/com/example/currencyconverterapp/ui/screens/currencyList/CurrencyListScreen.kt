@@ -64,6 +64,7 @@ private fun CurrencyListBody(
     when(currencyListUiState) {
         is CurrencyListUiState.Success -> {
             CurrencyList(
+                timestamp = currencyListUiState.timestamp,
                 listOfCurrency = currencyListUiState.listOfCurrency,
                 refreshState = refreshState,
                 refresh = currencyListViewModel::refresh
@@ -77,6 +78,7 @@ private fun CurrencyListBody(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrencyList(
+    timestamp: String,
     listOfCurrency: List<Currency>,
     refreshState: PullToRefreshState,
     refresh: () -> Unit
@@ -89,9 +91,12 @@ fun CurrencyList(
         }
     }
     Box(modifier = Modifier.nestedScroll(refreshState.nestedScrollConnection)) {
-        LazyColumn() {
-            items(listOfCurrency) {
-                CurrencyCard(it)
+        Column {
+            Timestamp(value = timestamp)
+            LazyColumn() {
+                items(listOfCurrency) {
+                    CurrencyCard(it)
+                }
             }
         }
         PullToRefreshContainer(
@@ -101,6 +106,16 @@ fun CurrencyList(
     }
 }
 
+@Composable
+fun Timestamp(value: String) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
+    ) {
+        Text(text = stringResource(id = R.string.timestamp))
+        Text(text = value)
+    }
+}
 @Composable
 fun LoadingScreen(modifier: Modifier = Modifier){
     Box(
