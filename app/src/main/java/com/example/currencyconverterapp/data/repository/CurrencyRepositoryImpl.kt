@@ -9,4 +9,9 @@ class CurrencyRepositoryImpl @Inject constructor(private val currencyRemoteDataS
     override suspend fun getCurrencyData(): CurrencyData {
         return currencyRemoteDataSource.getCurrencyData()
     }
+
+    override suspend fun getCurrency(charCode: String): Currency? {
+        val currencyData = currencyRemoteDataSource.getCurrencyData()
+        return currencyData.currencies[charCode]
+    }
 }
