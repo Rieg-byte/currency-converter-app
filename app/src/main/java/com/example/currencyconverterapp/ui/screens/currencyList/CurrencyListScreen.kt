@@ -1,5 +1,6 @@
 package com.example.currencyconverterapp.ui.screens.currencyList
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,14 +8,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
@@ -33,14 +31,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.currencyconverterapp.R
 import com.example.currencyconverterapp.data.model.Currency
+import com.example.currencyconverterapp.ui.components.ErrorScreen
+import com.example.currencyconverterapp.ui.components.LoadingScreen
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CurrencyListScreen(currencyListViewModel: CurrencyListViewModel = viewModel()) {
+fun CurrencyListScreen(
+    currencyListViewModel: CurrencyListViewModel,
+    onNavigateToConverter: (String) -> Unit
+) {
     val currencyListUiState by currencyListViewModel.currencyListUiState.collectAsState()
     val refreshState = rememberPullToRefreshState()
     Column(
@@ -49,7 +51,8 @@ fun CurrencyListScreen(currencyListViewModel: CurrencyListViewModel = viewModel(
         CurrencyListBody(
             currencyListUiState = currencyListUiState,
             currencyListViewModel = currencyListViewModel,
-            refreshState = refreshState
+            refreshState = refreshState,
+            onNavigateToConverter = onNavigateToConverter
         )
     }
 }
@@ -60,6 +63,7 @@ private fun CurrencyListBody(
     currencyListUiState: CurrencyListUiState,
     currencyListViewModel: CurrencyListViewModel,
     refreshState: PullToRefreshState,
+    onNavigateToConverter: (String) -> Unit
 ) {
     when(currencyListUiState) {
         is CurrencyListUiState.Success -> {
@@ -67,7 +71,8 @@ private fun CurrencyListBody(
                 timestamp = currencyListUiState.timestamp,
                 listOfCurrency = currencyListUiState.listOfCurrency,
                 refreshState = refreshState,
-                refresh = currencyListViewModel::refresh
+                refresh = currencyListViewModel::refresh,
+                onNavigateToConverter = onNavigateToConverter
             )
         }
         is CurrencyListUiState.Error -> ErrorScreen(currencyListViewModel::repeat)
@@ -81,7 +86,8 @@ fun CurrencyList(
     timestamp: String,
     listOfCurrency: List<Currency>,
     refreshState: PullToRefreshState,
-    refresh: () -> Unit
+    refresh: () -> Unit,
+    onNavigateToConverter: (String) -> Unit
 ) {
     if (refreshState.isRefreshing) {
         LaunchedEffect(true) {
@@ -95,7 +101,10 @@ fun CurrencyList(
             Timestamp(value = timestamp)
             LazyColumn() {
                 items(listOfCurrency) {
-                    CurrencyCard(it)
+                    CurrencyCard(
+                        currency = it,
+                        onNavigateToConverter = onNavigateToConverter
+                    )
                 }
             }
         }
@@ -116,40 +125,17 @@ fun Timestamp(value: String) {
         Text(text = value)
     }
 }
-@Composable
-fun LoadingScreen(modifier: Modifier = Modifier){
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
-    }
-}
 
 @Composable
-fun ErrorScreen(
-    onRepeat: () -> Unit,
-    modifier: Modifier = Modifier
+fun CurrencyCard(
+    currency: Currency,
+    onNavigateToConverter: (String) -> Unit = {}
 ){
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(text = stringResource(id = R.string.error))
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = onRepeat) {
-            Text(text = stringResource(id = R.string.repeat))
-        }
-    }
-}
-
-@Composable
-fun CurrencyCard(currency: Currency){
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clickable { onNavigateToConverter(currency.charCode) }
     ) {
         Row(
             modifier = Modifier
@@ -198,7 +184,7 @@ fun CurrencyCard(currency: Currency){
 @Composable
 fun CurrencyCardPreview(){
     CurrencyCard(
-        Currency(
+        currency = Currency(
             id = "2",
             numCode = "011",
             charCode = "USD",
