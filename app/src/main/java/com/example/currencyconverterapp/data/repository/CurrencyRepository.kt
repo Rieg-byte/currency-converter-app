@@ -1,8 +1,7 @@
 package com.example.currencyconverterapp.data.repository
 
-import com.example.currencyconverterapp.data.model.Currency
+import com.example.currencyconverterapp.data.model.CurrencyData
 
 interface CurrencyRepository {
-    suspend fun getTimestamp(): String
-    suspend fun getCurrencyList(): List<Currency>
+    suspend fun getCurrencyData(): CurrencyData
 }
