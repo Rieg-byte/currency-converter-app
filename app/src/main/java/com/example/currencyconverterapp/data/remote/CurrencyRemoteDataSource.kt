@@ -1,7 +1,7 @@
 package com.example.currencyconverterapp.data.remote
 
-import com.example.currencyconverterapp.data.model.CurrencyList
+import com.example.currencyconverterapp.data.model.CurrencyData
 
 interface CurrencyRemoteDataSource {
-    suspend fun getCurrencyList(): CurrencyList
+    suspend fun getCurrencyData(): CurrencyData
 }
