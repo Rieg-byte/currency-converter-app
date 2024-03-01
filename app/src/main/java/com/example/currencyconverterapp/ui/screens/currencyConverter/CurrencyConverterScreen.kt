@@ -37,22 +37,32 @@ fun CurrencyConverterScreen(
     currencyConverterViewModel: CurrencyConverterViewModel
 ) {
     val currencyConverterUiState by currencyConverterViewModel.currencyConverterUiState.collectAsState()
+    CurrencyConverterBody(
+        currencyConverterViewModel = currencyConverterViewModel,
+        currencyConverterUiState = currencyConverterUiState
+    )
+}
+
+@Composable
+fun CurrencyConverterBody(
+    currencyConverterViewModel: CurrencyConverterViewModel,
+    currencyConverterUiState: CurrencyConverterUiState
+){
     Column(modifier = Modifier.fillMaxSize()) {
-        when {
-            currencyConverterUiState.isLoading -> LoadingScreen()
-            currencyConverterUiState.error -> ErrorScreen(onRepeat = currencyConverterViewModel::repeat)
-            else -> CurrencyConverter(
+        when(currencyConverterUiState) {
+            is CurrencyConverterUiState.Loading -> LoadingScreen()
+            is CurrencyConverterUiState.Error -> ErrorScreen(onRepeat = currencyConverterViewModel::repeat)
+            is CurrencyConverterUiState.Success -> CurrencyConverter(
                 fromCurrency = currencyConverterUiState.fromCurrency,
                 fromValue = currencyConverterUiState.fromValue,
                 toCurrency = currencyConverterUiState.toCurrency,
                 toValue = currencyConverterUiState.toValue,
-                wrongValueError = currencyConverterUiState.wrongValueError,
+                wrongValue = currencyConverterUiState.wrongValue,
                 onValueChange = currencyConverterViewModel::updateValue
             )
         }
     }
 }
-
 @Composable
 fun CurrencyConverter(
     modifier: Modifier = Modifier,
@@ -60,7 +70,7 @@ fun CurrencyConverter(
     fromValue: String,
     toCurrency: String,
     toValue: String,
-    wrongValueError: Boolean,
+    wrongValue: Boolean,
     onValueChange: (String) -> Unit
 ) {
     Column(
@@ -91,7 +101,7 @@ fun CurrencyConverter(
                 value = toCurrency
             )
             Spacer(modifier = Modifier.width(20.dp))
-            if (wrongValueError) {
+            if (wrongValue) {
                 CurrencyField(
                     modifier = Modifier.weight(2f),
                     value = stringResource(id = R.string.wrong_value),
