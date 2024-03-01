@@ -45,10 +45,11 @@ fun CurrencyConverterScreen(
 
 @Composable
 fun CurrencyConverterBody(
+    modifier: Modifier = Modifier,
     currencyConverterViewModel: CurrencyConverterViewModel,
     currencyConverterUiState: CurrencyConverterUiState
 ){
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
         when(currencyConverterUiState) {
             is CurrencyConverterUiState.Loading -> LoadingScreen()
             is CurrencyConverterUiState.Error -> ErrorScreen(onRepeat = currencyConverterViewModel::repeat)

@@ -45,38 +45,40 @@ fun CurrencyListScreen(
 ) {
     val currencyListUiState by currencyListViewModel.currencyListUiState.collectAsState()
     val refreshState = rememberPullToRefreshState()
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        CurrencyListBody(
-            currencyListUiState = currencyListUiState,
-            currencyListViewModel = currencyListViewModel,
-            refreshState = refreshState,
-            onNavigateToConverter = onNavigateToConverter
-        )
-    }
+    CurrencyListBody(
+        currencyListUiState = currencyListUiState,
+        currencyListViewModel = currencyListViewModel,
+        refreshState = refreshState,
+        onNavigateToConverter = onNavigateToConverter
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CurrencyListBody(
+    modifier: Modifier = Modifier,
     currencyListUiState: CurrencyListUiState,
     currencyListViewModel: CurrencyListViewModel,
     refreshState: PullToRefreshState,
     onNavigateToConverter: (String) -> Unit
 ) {
-    when(currencyListUiState) {
-        is CurrencyListUiState.Success -> {
-            CurrencyList(
-                timestamp = currencyListUiState.timestamp,
-                listOfCurrency = currencyListUiState.listOfCurrency,
-                refreshState = refreshState,
-                refresh = currencyListViewModel::refresh,
-                onNavigateToConverter = onNavigateToConverter
-            )
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        when (currencyListUiState) {
+            is CurrencyListUiState.Success -> {
+                CurrencyList(
+                    timestamp = currencyListUiState.timestamp,
+                    listOfCurrency = currencyListUiState.listOfCurrency,
+                    refreshState = refreshState,
+                    refresh = currencyListViewModel::refresh,
+                    onNavigateToConverter = onNavigateToConverter
+                )
+            }
+
+            is CurrencyListUiState.Error -> ErrorScreen(currencyListViewModel::repeat)
+            is CurrencyListUiState.Loading -> LoadingScreen()
         }
-        is CurrencyListUiState.Error -> ErrorScreen(currencyListViewModel::repeat)
-        is CurrencyListUiState.Loading -> LoadingScreen()
     }
 }
 
