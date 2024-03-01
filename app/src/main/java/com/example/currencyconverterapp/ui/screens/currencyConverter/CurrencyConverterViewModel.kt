@@ -34,7 +34,6 @@ class CurrencyConverterViewModel @Inject constructor(
 
     fun updateValue(value: String) {
         val amount = value.toDoubleOrNull() ?: 0.0
-        if (_currencyConverterUiState.value !is CurrencyConverterUiState.Success) return
         val fromValue = value.ifBlank { "0" }
         val toValue = if (amount == 0.0) "0.0" else "%.2f".format(convert(amount))
         _currencyConverterUiState.value = CurrencyConverterUiState.Success(
@@ -51,11 +50,7 @@ class CurrencyConverterViewModel @Inject constructor(
             if (result != null) {
                 amountCurrency = result.value
                 nominal = result.nominal
-                _currencyConverterUiState.value = CurrencyConverterUiState.Success(
-                    fromCurrency = charCode,
-                    fromValue = nominal.toString(),
-                    toValue = "%.2f".format(convert(nominal))
-                )
+                updateValue(nominal.toString())
             } else {
                 error()
             }
