@@ -33,29 +33,15 @@ class CurrencyConverterViewModel @Inject constructor(
     }
 
     fun updateValue(value: String) {
-        val amount = value.toDoubleOrNull()
+        val amount = value.toDoubleOrNull() ?: 0.0
         if (_currencyConverterUiState.value !is CurrencyConverterUiState.Success) return
-        if (amount != null) {
-            _currencyConverterUiState.value = CurrencyConverterUiState.Success(
-                fromCurrency = charCode,
-                fromValue = value,
-                toValue = "%.2f".format(convert(amount)),
-                wrongValue = false
-            )
-        } else if(value.isBlank()) {
-            _currencyConverterUiState.value = CurrencyConverterUiState.Success(
-                fromCurrency = charCode,
-                fromValue = "0",
-                toValue = "0.0",
-                wrongValue = false
-            )
-        }else {
-            _currencyConverterUiState.value = CurrencyConverterUiState.Success(
-                fromCurrency = charCode,
-                fromValue = value,
-                wrongValue = true
-            )
-        }
+        val fromValue = value.ifBlank { "0" }
+        val toValue = if (amount == 0.0) "0.0" else "%.2f".format(convert(amount))
+        _currencyConverterUiState.value = CurrencyConverterUiState.Success(
+            fromCurrency = charCode,
+            fromValue = fromValue,
+            toValue = toValue,
+        )
     }
 
     private fun getCurrency(charCode: String) = viewModelScope.launch {
