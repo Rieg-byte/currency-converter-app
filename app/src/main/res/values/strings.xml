@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CurrencyConverterApp</string>
-    <string name="error">Ошибка</string>
+    <string name="error">Ошибка подключения</string>
+    <string name="wrong_value">Ошибка</string>
     <string name="repeat">Повторить</string>
     <string name="timestamp">Последнее обновление базы данных: </string>
 </resources>
