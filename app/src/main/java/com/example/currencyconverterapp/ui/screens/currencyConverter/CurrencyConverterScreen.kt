@@ -24,9 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.currencyconverterapp.R
 import com.example.currencyconverterapp.ui.components.ErrorScreen
 import com.example.currencyconverterapp.ui.components.LoadingScreen
 
@@ -35,30 +37,18 @@ fun CurrencyConverterScreen(
     currencyConverterViewModel: CurrencyConverterViewModel
 ) {
     val currencyConverterUiState by currencyConverterViewModel.currencyConverterUiState.collectAsState()
-    CurrencyConverterBody(
-            currencyConverterUiState = currencyConverterUiState,
-            currencyConverterViewModel = currencyConverterViewModel
-    )
-}
-
-
-@Composable
-fun CurrencyConverterBody(
-    modifier: Modifier = Modifier,
-    currencyConverterUiState: CurrencyConverterUiState,
-    currencyConverterViewModel: CurrencyConverterViewModel
-) {
-    Column(modifier = modifier.fillMaxSize()) {
-        when (currencyConverterUiState) {
-            is CurrencyConverterUiState.Success -> CurrencyConverter(
+    Column(modifier = Modifier.fillMaxSize()) {
+        when {
+            currencyConverterUiState.isLoading -> LoadingScreen()
+            currencyConverterUiState.error -> ErrorScreen(onRepeat = currencyConverterViewModel::repeat)
+            else -> CurrencyConverter(
                 fromCurrency = currencyConverterUiState.fromCurrency,
                 fromValue = currencyConverterUiState.fromValue,
                 toCurrency = currencyConverterUiState.toCurrency,
-                toValue = currencyConverterUiState.toValue
+                toValue = currencyConverterUiState.toValue,
+                wrongValueError = currencyConverterUiState.wrongValueError,
+                onValueChange = currencyConverterViewModel::updateValue
             )
-
-            is CurrencyConverterUiState.Loading -> LoadingScreen()
-            is CurrencyConverterUiState.Error -> ErrorScreen(onRepeat = { /*TODO*/ })
         }
     }
 }
@@ -69,7 +59,9 @@ fun CurrencyConverter(
     fromCurrency: String,
     fromValue: String,
     toCurrency: String,
-    toValue: String
+    toValue: String,
+    wrongValueError: Boolean,
+    onValueChange: (String) -> Unit
 ) {
     Column(
         modifier = modifier.padding(8.dp),
@@ -86,7 +78,8 @@ fun CurrencyConverter(
             Spacer(modifier = Modifier.width(20.dp))
             CurrencyField(
                 modifier = Modifier.weight(2f),
-                value = fromValue
+                value = fromValue,
+                onValueChange = onValueChange
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
@@ -98,10 +91,19 @@ fun CurrencyConverter(
                 value = toCurrency
             )
             Spacer(modifier = Modifier.width(20.dp))
-            CurrencyField(
-                modifier = Modifier.weight(2f),
-                value = toValue
-            )
+            if (wrongValueError) {
+                CurrencyField(
+                    modifier = Modifier.weight(2f),
+                    value = stringResource(id = R.string.wrong_value),
+                    enabled = false
+                )
+            } else {
+                CurrencyField(
+                    modifier = Modifier.weight(2f),
+                    value = toValue,
+                    enabled = false
+                )
+            }
         }
     }
 }
@@ -128,7 +130,7 @@ fun CurrencyField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit = {},
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     val focusManager = LocalFocusManager.current
     TextField(
