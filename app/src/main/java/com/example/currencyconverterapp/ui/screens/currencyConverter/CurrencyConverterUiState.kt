@@ -6,7 +6,6 @@ sealed interface CurrencyConverterUiState {
         val fromValue: String = "",
         val toCurrency: String = "RUB",
         val toValue: String = "",
-        val wrongValue: Boolean = false,
     ) : CurrencyConverterUiState
     object Loading : CurrencyConverterUiState
     object Error : CurrencyConverterUiState

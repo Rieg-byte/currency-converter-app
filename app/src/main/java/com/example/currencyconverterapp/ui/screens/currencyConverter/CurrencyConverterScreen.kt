@@ -57,7 +57,6 @@ fun CurrencyConverterBody(
                 fromValue = currencyConverterUiState.fromValue,
                 toCurrency = currencyConverterUiState.toCurrency,
                 toValue = currencyConverterUiState.toValue,
-                wrongValue = currencyConverterUiState.wrongValue,
                 onValueChange = currencyConverterViewModel::updateValue
             )
         }
@@ -70,7 +69,6 @@ fun CurrencyConverter(
     fromValue: String,
     toCurrency: String,
     toValue: String,
-    wrongValue: Boolean,
     onValueChange: (String) -> Unit
 ) {
     Column(
@@ -101,19 +99,11 @@ fun CurrencyConverter(
                 value = toCurrency
             )
             Spacer(modifier = Modifier.width(20.dp))
-            if (wrongValue) {
-                CurrencyField(
-                    modifier = Modifier.weight(2f),
-                    value = stringResource(id = R.string.wrong_value),
-                    enabled = false
-                )
-            } else {
-                CurrencyField(
-                    modifier = Modifier.weight(2f),
-                    value = toValue,
-                    enabled = false
-                )
-            }
+            CurrencyField(
+                modifier = Modifier.weight(2f),
+                value = toValue,
+                enabled = false
+            )
         }
     }
 }
