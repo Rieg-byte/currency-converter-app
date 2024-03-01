@@ -5,10 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.currencyconverterapp.data.repository.CurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -21,7 +19,7 @@ class CurrencyConverterViewModel @Inject constructor(
 ): ViewModel() {
     private val charCode: String = checkNotNull(savedStateHandle["charCode"])
     private val _currencyConverterUiState =
-        MutableStateFlow<CurrencyConverterUiState>(CurrencyConverterUiState(fromCurrency = charCode))
+        MutableStateFlow<CurrencyConverterUiState>(CurrencyConverterUiState.Loading)
     val currencyConverterUiState = _currencyConverterUiState.asStateFlow()
     private var amountCurrency = 0.0
     private var nominal = 0
@@ -36,33 +34,28 @@ class CurrencyConverterViewModel @Inject constructor(
 
     fun updateValue(value: String) {
         val amount = value.toDoubleOrNull()
-        _currencyConverterUiState.update {
-            if (amount != null) {
-                it.copy(
-                    fromValue = value,
-                    toValue = convert(amount).toString(),
-                    wrongValueError = false
-                )
-            } else if(value.isBlank()) {
-                it.copy(
-                    fromValue = "0",
-                    toValue = "0.0"
-                )
-            }else {
-                it.copy(
-                    fromValue = value,
-                    wrongValueError = true
-                )
-            }
+        if (_currencyConverterUiState.value !is CurrencyConverterUiState.Success) return
+        if (amount != null) {
+            _currencyConverterUiState.value = CurrencyConverterUiState.Success(
+                fromCurrency = charCode,
+                fromValue = value,
+                toValue = "%.2f".format(convert(amount)),
+                wrongValue = false
+            )
+        } else if(value.isBlank()) {
+            _currencyConverterUiState.value = CurrencyConverterUiState.Success(
+                fromCurrency = charCode,
+                fromValue = "0",
+                toValue = "0.0",
+                wrongValue = false
+            )
+        }else {
+            _currencyConverterUiState.value = CurrencyConverterUiState.Success(
+                fromCurrency = charCode,
+                fromValue = value,
+                wrongValue = true
+            )
         }
-    }
-
-    private fun convert(value: Double): Double {
-        return (value * amountCurrency) / nominal
-    }
-
-    private fun convert(value: Int): Double {
-        return (value * amountCurrency) / nominal
     }
 
     private fun getCurrency(charCode: String) = viewModelScope.launch {
@@ -72,14 +65,11 @@ class CurrencyConverterViewModel @Inject constructor(
             if (result != null) {
                 amountCurrency = result.value
                 nominal = result.nominal
-                _currencyConverterUiState.update {
-                    it.copy(
-                        fromValue = nominal.toString(),
-                        toValue = convert(nominal).toString(),
-                        error = false,
-                        isLoading = false
-                    )
-                }
+                _currencyConverterUiState.value = CurrencyConverterUiState.Success(
+                    fromCurrency = charCode,
+                    fromValue = nominal.toString(),
+                    toValue = "%.2f".format(convert(nominal))
+                )
             } else {
                 error()
             }
@@ -91,20 +81,18 @@ class CurrencyConverterViewModel @Inject constructor(
     }
 
     private fun error() {
-        _currencyConverterUiState.update {
-            it.copy(
-                error = true,
-                isLoading = false
-            )
-        }
+        _currencyConverterUiState.value = CurrencyConverterUiState.Error
     }
 
     private fun loading() {
-        _currencyConverterUiState.update {
-            it.copy(
-                error = false,
-                isLoading = true
-            )
-        }
+        _currencyConverterUiState.value = CurrencyConverterUiState.Loading
+    }
+
+    private fun convert(value: Double): Double {
+        return (value * amountCurrency) / nominal
+    }
+
+    private fun convert(value: Int): Double {
+        return (value * amountCurrency) / nominal
     }
 }
