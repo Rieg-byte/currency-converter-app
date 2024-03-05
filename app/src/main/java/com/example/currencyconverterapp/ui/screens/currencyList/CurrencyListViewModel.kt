@@ -25,7 +25,7 @@ class CurrencyListViewModel @Inject constructor(private val currencyRepository: 
         getCurrencyList()
     }
 
-    fun refresh() = viewModelScope.launch {
+    fun updateCurrencyList() = viewModelScope.launch {
         try {
             val result = currencyRepository.getCurrencyData()
             val timestamp = result.timestamp
@@ -42,20 +42,8 @@ class CurrencyListViewModel @Inject constructor(private val currencyRepository: 
     }
 
     private fun getCurrencyList() = viewModelScope.launch {
-        try {
-            _currencyListUiState.value = CurrencyListUiState.Loading
-            val result = currencyRepository.getCurrencyData()
-            val timestamp = result.timestamp
-            val listOfCurrency = result.currencies.values.toList()
-            _currencyListUiState.value = CurrencyListUiState.Success(
-                timestamp = toNormalFormat(timestamp),
-                listOfCurrency = listOfCurrency
-            )
-        } catch (e: IOException) {
-            _currencyListUiState.value = CurrencyListUiState.Error
-        } catch (e: HttpException) {
-            _currencyListUiState.value = CurrencyListUiState.Error
-        }
+        _currencyListUiState.value = CurrencyListUiState.Loading
+        updateCurrencyList()
     }
 }
 
