@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.currencyconverterapp"
+    namespace = "com.rieg.currencyconverterapp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.currencyconverterapp"
+        applicationId = "com.rieg.currencyconverterapp"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
