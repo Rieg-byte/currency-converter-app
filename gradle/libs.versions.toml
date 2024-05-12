@@ -1,5 +1,6 @@
 [versions]
 agp = "8.4.0"
+datastorePreferences = "1.1.1"
 kotlin = "1.9.22"
 daggerHilt = "2.50"
 activityCompose = "1.8.2"
@@ -21,6 +22,7 @@ retrofit2KotlinxSerializationConverter = "1.0.0"
 [libraries]
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 androidx-ui-compose = { group = "androidx.compose.ui", name = "ui" }
