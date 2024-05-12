@@ -1,4 +1,4 @@
-package com.rieg.currencyconverterapp.ui.screens.currencyList
+package com.rieg.currencyconverterapp.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,8 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CurrencyListViewModel @Inject constructor(private val currencyRepository: CurrencyRepository): ViewModel() {
-    private val _currencyListUiState = MutableStateFlow<CurrencyListUiState>(CurrencyListUiState.Loading)
-    val currencyListUiState = _currencyListUiState.asStateFlow()
+    private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+    val currencyListUiState = _homeUiState.asStateFlow()
     init {
         getCurrencyList()
     }
@@ -30,19 +30,19 @@ class CurrencyListViewModel @Inject constructor(private val currencyRepository: 
             val result = currencyRepository.getCurrencyData()
             val timestamp = result.timestamp
             val listOfCurrency = result.currencies.values.toList()
-            _currencyListUiState.value = CurrencyListUiState.Success(
+            _homeUiState.value = HomeUiState.Success(
                 timestamp = toNormalFormat(timestamp),
                 listOfCurrency = listOfCurrency
             )
         } catch (e: IOException) {
-            _currencyListUiState.value = CurrencyListUiState.Error
+            _homeUiState.value = HomeUiState.Error
         } catch (e: HttpException) {
-            _currencyListUiState.value = CurrencyListUiState.Error
+            _homeUiState.value = HomeUiState.Error
         }
     }
 
     private fun getCurrencyList() = viewModelScope.launch {
-        _currencyListUiState.value = CurrencyListUiState.Loading
+        _homeUiState.value = HomeUiState.Loading
         updateCurrencyList()
     }
 }

@@ -1,4 +1,4 @@
-package com.rieg.currencyconverterapp.ui.screens.currencyList
+package com.rieg.currencyconverterapp.ui.screens.home
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,7 +50,7 @@ fun CurrencyListScreen(
     val currencyListUiState by currencyListViewModel.currencyListUiState.collectAsState()
     val refreshState = rememberPullToRefreshState()
     CurrencyListBody(
-        currencyListUiState = currencyListUiState,
+        homeUiState = currencyListUiState,
         currencyListViewModel = currencyListViewModel,
         refreshState = refreshState,
         onNavigateToConverter = onNavigateToConverter
@@ -61,7 +61,7 @@ fun CurrencyListScreen(
 @Composable
 private fun CurrencyListBody(
     modifier: Modifier = Modifier,
-    currencyListUiState: CurrencyListUiState,
+    homeUiState: HomeUiState,
     currencyListViewModel: CurrencyListViewModel,
     refreshState: PullToRefreshState,
     onNavigateToConverter: (String) -> Unit
@@ -69,19 +69,19 @@ private fun CurrencyListBody(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        when (currencyListUiState) {
-            is CurrencyListUiState.Success -> {
+        when (homeUiState) {
+            is HomeUiState.Success -> {
                 CurrencyList(
-                    timestamp = currencyListUiState.timestamp,
-                    listOfCurrency = currencyListUiState.listOfCurrency,
+                    timestamp = homeUiState.timestamp,
+                    listOfCurrency = homeUiState.listOfCurrency,
                     refreshState = refreshState,
                     refresh = currencyListViewModel::updateCurrencyList,
                     onNavigateToConverter = onNavigateToConverter
                 )
             }
 
-            is CurrencyListUiState.Error -> ErrorScreen(currencyListViewModel::repeat)
-            is CurrencyListUiState.Loading -> LoadingScreen()
+            is HomeUiState.Error -> ErrorScreen(currencyListViewModel::repeat)
+            is HomeUiState.Loading -> LoadingScreen()
         }
     }
 }

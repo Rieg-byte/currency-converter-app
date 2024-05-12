@@ -10,8 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.rieg.currencyconverterapp.ui.screens.currencyConverter.CurrencyConverterScreen
 import com.rieg.currencyconverterapp.ui.screens.currencyConverter.CurrencyConverterViewModel
-import com.rieg.currencyconverterapp.ui.screens.currencyList.CurrencyListScreen
-import com.rieg.currencyconverterapp.ui.screens.currencyList.CurrencyListViewModel
+import com.rieg.currencyconverterapp.ui.screens.home.CurrencyListScreen
+import com.rieg.currencyconverterapp.ui.screens.home.CurrencyListViewModel
 
 @Composable
 fun CurrencyConverterNavHost(
