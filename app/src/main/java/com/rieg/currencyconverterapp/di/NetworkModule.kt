@@ -1,7 +1,7 @@
 package com.rieg.currencyconverterapp.di
 
-import com.rieg.currencyconverterapp.data.remote.CurrencyApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.rieg.currencyconverterapp.data.remote.CurrencyApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

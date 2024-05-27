@@ -2,8 +2,8 @@ package com.rieg.currencyconverterapp.di
 
 import com.rieg.currencyconverterapp.data.remote.CurrencyRemoteDataSource
 import com.rieg.currencyconverterapp.data.remote.CurrencyRemoteDataSourceImpl
-import com.rieg.currencyconverterapp.data.repository.CurrencyRepository
 import com.rieg.currencyconverterapp.data.repository.CurrencyRepositoryImpl
+import com.rieg.currencyconverterapp.domain.repository.CurrencyRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
