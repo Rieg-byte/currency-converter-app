@@ -10,7 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.rieg.currencyconverterapp.ui.screens.currencyConverter.CurrencyConverterScreen
 import com.rieg.currencyconverterapp.ui.screens.currencyConverter.CurrencyConverterViewModel
-import com.rieg.currencyconverterapp.ui.screens.home.CurrencyListScreen
+import com.rieg.currencyconverterapp.ui.screens.home.HomeScreen
 import com.rieg.currencyconverterapp.ui.screens.home.CurrencyListViewModel
 
 @Composable
@@ -21,7 +21,7 @@ fun CurrencyConverterNavHost(
     NavHost(navController = navController, startDestination = startDestination) {
         composable(CurrencyConverterDestination.CURRENCY_LIST.name) {
             val currencyListViewModel = hiltViewModel<CurrencyListViewModel>()
-            CurrencyListScreen(
+            HomeScreen(
                 currencyListViewModel = currencyListViewModel,
                 onNavigateToConverter = { charCode ->
                 navController.navigate(
