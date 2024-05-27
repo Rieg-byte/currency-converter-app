@@ -3,7 +3,7 @@ package com.rieg.currencyconverterapp.ui.screens.currencyConverter
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rieg.currencyconverterapp.data.repository.CurrencyRepository
+import com.rieg.currencyconverterapp.domain.repository.CurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

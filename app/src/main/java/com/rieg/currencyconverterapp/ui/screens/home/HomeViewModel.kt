@@ -2,7 +2,7 @@ package com.rieg.currencyconverterapp.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rieg.currencyconverterapp.data.repository.CurrencyRepository
+import com.rieg.currencyconverterapp.domain.repository.CurrencyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +29,7 @@ class CurrencyListViewModel @Inject constructor(private val currencyRepository: 
         try {
             val result = currencyRepository.getCurrencyData()
             val timestamp = result.timestamp
-            val listOfCurrency = result.currencies.values.toList()
+            val listOfCurrency = result.currencies
             _homeUiState.value = HomeUiState.Success(
                 timestamp = toNormalFormat(timestamp),
                 listOfCurrency = listOfCurrency

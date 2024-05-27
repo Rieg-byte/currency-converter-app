@@ -1,12 +1,12 @@
 package com.rieg.currencyconverterapp.ui.screens.home
 
-import com.rieg.currencyconverterapp.data.model.Currency
+import com.rieg.currencyconverterapp.domain.models.Currency
 
 sealed interface HomeUiState{
     data class Success(
         val timestamp: String,
         val listOfCurrency: List<Currency> = emptyList()
     ): HomeUiState
-    object Loading: HomeUiState
-    object Error: HomeUiState
+    data object Loading: HomeUiState
+    data object Error: HomeUiState
 }
