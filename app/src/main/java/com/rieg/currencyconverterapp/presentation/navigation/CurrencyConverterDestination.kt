@@ -1,4 +1,4 @@
-package com.rieg.currencyconverterapp.ui.navigation
+package com.rieg.currencyconverterapp.presentation.navigation
 
 enum class CurrencyConverterDestination {
     CURRENCY_LIST,

@@ -1,4 +1,4 @@
-package com.rieg.currencyconverterapp.ui.screens.home
+package com.rieg.currencyconverterapp.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

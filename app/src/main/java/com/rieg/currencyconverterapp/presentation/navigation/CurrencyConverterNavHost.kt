@@ -1,4 +1,4 @@
-package com.rieg.currencyconverterapp.ui.navigation
+package com.rieg.currencyconverterapp.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -8,10 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.rieg.currencyconverterapp.ui.screens.currencyConverter.CurrencyConverterScreen
-import com.rieg.currencyconverterapp.ui.screens.currencyConverter.CurrencyConverterViewModel
-import com.rieg.currencyconverterapp.ui.screens.home.HomeScreen
-import com.rieg.currencyconverterapp.ui.screens.home.CurrencyListViewModel
+import com.rieg.currencyconverterapp.presentation.currencyconverter.CurrencyConverterScreen
+import com.rieg.currencyconverterapp.presentation.currencyconverter.CurrencyConverterViewModel
+import com.rieg.currencyconverterapp.presentation.home.HomeScreen
+import com.rieg.currencyconverterapp.presentation.home.CurrencyListViewModel
 
 @Composable
 fun CurrencyConverterNavHost(

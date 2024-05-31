@@ -1,4 +1,4 @@
-package com.rieg.currencyconverterapp.ui.screens.currencyConverter
+package com.rieg.currencyconverterapp.presentation.currencyconverter
 
 sealed interface CurrencyConverterUiState {
     data class Success(

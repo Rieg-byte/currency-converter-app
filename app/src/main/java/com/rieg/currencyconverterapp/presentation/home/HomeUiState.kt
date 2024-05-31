@@ -1,4 +1,4 @@
-package com.rieg.currencyconverterapp.ui.screens.home
+package com.rieg.currencyconverterapp.presentation.home
 
 import com.rieg.currencyconverterapp.domain.models.Currency
 

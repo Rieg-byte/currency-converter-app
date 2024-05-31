@@ -1,4 +1,4 @@
-package com.rieg.currencyconverterapp.ui.screens.currencyConverter
+package com.rieg.currencyconverterapp.presentation.currencyconverter
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
