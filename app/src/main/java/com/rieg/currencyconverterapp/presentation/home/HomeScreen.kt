@@ -33,6 +33,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -44,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rieg.currencyconverterapp.R
 import com.rieg.currencyconverterapp.domain.models.Currency
+import com.rieg.currencyconverterapp.presentation.settings.SettingsDialog
 import com.rieg.currencyconverterapp.ui.components.ErrorScreen
 import com.rieg.currencyconverterapp.ui.components.LoadingScreen
 import com.rieg.currencyconverterapp.ui.theme.CurrencyConverterAppTheme
@@ -60,13 +64,17 @@ fun HomeScreen(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val currencyListUiState by currencyListViewModel.currencyListUiState.collectAsState()
     val refreshState = rememberPullToRefreshState()
+    var showSettingsDialog by rememberSaveable { mutableStateOf(false) }
+    if (showSettingsDialog) {
+        SettingsDialog(onDismiss = { showSettingsDialog = false })
+    }
     Scaffold(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             HomeTopBar(
                 titleRes = R.string.currency_list,
-                onActionClick = { /*TODO*/ },
+                onActionClick = { showSettingsDialog = true },
                 actionIcon = Icons.Filled.Settings,
                 scrollBehavior = scrollBehavior
             )
