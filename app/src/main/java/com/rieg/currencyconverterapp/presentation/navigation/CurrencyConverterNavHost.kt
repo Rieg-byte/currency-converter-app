@@ -6,16 +6,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.rieg.currencyconverterapp.presentation.currencyconverter.CurrencyConverterScreen
 import com.rieg.currencyconverterapp.presentation.currencyconverter.CurrencyConverterViewModel
-import com.rieg.currencyconverterapp.presentation.home.HomeScreen
 import com.rieg.currencyconverterapp.presentation.home.CurrencyListViewModel
+import com.rieg.currencyconverterapp.presentation.home.HomeScreen
 
 @Composable
 fun CurrencyConverterNavHost(
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController,
     startDestination: String = CurrencyConverterDestination.CURRENCY_LIST.name
 ) {
     NavHost(navController = navController, startDestination = startDestination) {
