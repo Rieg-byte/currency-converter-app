@@ -3,4 +3,6 @@
     <string name="error">Ошибка подключения</string>
     <string name="repeat">Повторить</string>
     <string name="timestamp">Последнее обновление базы данных: </string>
+    <string name="currency_list">Список валют</string>
+    <string name="converter">Конвертер</string>
 </resources>
