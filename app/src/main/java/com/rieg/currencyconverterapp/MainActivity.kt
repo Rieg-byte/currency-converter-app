@@ -29,3 +29,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Composable
+private fun shouldUseDarkTheme(
+    mainActivityUiState: MainActivityUiState,
+): Boolean = when (mainActivityUiState.themeMode) {
+    ThemeMode.LIGHT.name -> false
+    ThemeMode.DARK.name -> true
+    else -> isSystemInDarkTheme()
+}
