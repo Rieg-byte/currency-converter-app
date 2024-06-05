@@ -1,5 +1,6 @@
 package com.rieg.currencyconverterapp.presentation.home
 
+import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,19 +10,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -31,20 +35,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.rieg.currencyconverterapp.R
 import com.rieg.currencyconverterapp.domain.models.Currency
 import com.rieg.currencyconverterapp.ui.components.ErrorScreen
 import com.rieg.currencyconverterapp.ui.components.LoadingScreen
+import com.rieg.currencyconverterapp.ui.theme.CurrencyConverterAppTheme
+import com.rieg.currencyconverterapp.ui.theme.down
+import com.rieg.currencyconverterapp.ui.theme.rise
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,17 +57,29 @@ fun HomeScreen(
     currencyListViewModel: CurrencyListViewModel,
     onNavigateToConverter: (String) -> Unit
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val currencyListUiState by currencyListViewModel.currencyListUiState.collectAsState()
     val refreshState = rememberPullToRefreshState()
     Scaffold(
-        topBar = {}
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            HomeTopBar(
+                titleRes = R.string.currency_list,
+                onActionClick = { /*TODO*/ },
+                actionIcon = Icons.Filled.Settings,
+                scrollBehavior = scrollBehavior
+            )
+        }
     ) { paddingValues ->
         HomeBody(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             homeUiState = currencyListUiState,
             currencyListViewModel = currencyListViewModel,
             refreshState = refreshState,
-            onNavigateToConverter = onNavigateToConverter,
-            modifier = Modifier.padding(paddingValues)
+            onNavigateToConverter = onNavigateToConverter
         )
     }
 }
@@ -73,24 +89,19 @@ fun HomeScreen(
 fun HomeTopBar(
     modifier: Modifier = Modifier,
     @StringRes titleRes: Int,
-    onNavigationClick: () -> Unit,
-    navigationIcon: ImageVector,
-    navigationContentDescription: String? = null,
     onActionClick: () -> Unit,
     actionIcon: ImageVector,
     actionContentDescription: String? = null,
+    scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     CenterAlignedTopAppBar(
         title = { Text(text = stringResource(id = titleRes)) },
-        navigationIcon = {
-            IconButton(onClick = onNavigationClick) {
-                Icon(imageVector = navigationIcon, contentDescription = navigationContentDescription) }
-        },
         actions = {
             IconButton(onClick = onActionClick) {
                 Icon(imageVector = actionIcon, contentDescription = actionContentDescription)
             }
         },
+        scrollBehavior = scrollBehavior,
         modifier = modifier
     )
 }
@@ -105,7 +116,7 @@ private fun HomeBody(
     onNavigateToConverter: (String) -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
     ) {
         when (homeUiState) {
             is HomeUiState.Success -> {
@@ -142,8 +153,10 @@ fun CurrencyList(
     }
     Box(modifier = Modifier.nestedScroll(refreshState.nestedScrollConnection)) {
         Column {
-            Timestamp(value = timestamp)
             LazyColumn() {
+                item {
+                    Timestamp(value = timestamp)
+                }
                 items(listOfCurrency) { currency ->
                     CurrencyCard(
                         currency = currency,
@@ -166,7 +179,10 @@ fun Timestamp(value: String) {
         .fillMaxWidth()
         .padding(8.dp)
     ) {
-        Text(text = stringResource(id = R.string.timestamp))
+        Text(
+            text = stringResource(id = R.string.timestamp),
+            style = MaterialTheme.typography.titleSmall
+        )
         Text(text = value)
     }
 }
@@ -177,17 +193,12 @@ fun CurrencyCard(
     onNavigateToConverter: (String) -> Unit = {}
 ){
     val diff = currency.value - currency.previous
-    val color = when {
-        diff > 0 -> Color(0xFF87E455)
-        diff < 0 -> Color(0xFFF44336)
-        else -> Color(0xFFD5D5D5)
-    }
+    val color = if (diff > 0) MaterialTheme.colorScheme.rise else MaterialTheme.colorScheme.down
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clickable { onNavigateToConverter(currency.charCode) }
-            .height(60.dp)
     ) {
         Row(
             modifier = Modifier
@@ -201,98 +212,52 @@ fun CurrencyCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    text = "${currency.nominal} ${currency.charCode}"
+                    style = MaterialTheme.typography.titleLarge,
+                    text = currency.charCode
                 )
                 Text(
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    text = currency.name
+                    text = "${currency.nominal} ${currency.name}"
                 )
             }
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
                     text = "%.2f".format(currency.value)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Card(
-                    modifier = Modifier.weight(1f),
-                    colors = CardDefaults.cardColors(
-                        containerColor = color
-                    )
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            textAlign = TextAlign.Center,
-                            fontSize = 24.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Normal,
-                            text = "%.2f".format(diff)
-                        )
-                    }
-                }
+                Text(
+                    textAlign = TextAlign.Center,
+                    color = color,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    text = "%.2f".format(diff)
+                )
             }
         }
     }
 }
 
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(showBackground = true)
 @Composable
-fun CurrencyCardPreview1(){
-    CurrencyCard(
-        currency = Currency(
-            id = "2",
-            numCode = "011",
-            charCode = "USD",
-            nominal = 1,
-            name = "Американский доллар",
-            value = 90.11,
-            previous = 90.10
+fun PreviewCurrencyCard(){
+    CurrencyConverterAppTheme {
+        CurrencyCard(
+            currency = Currency(
+                id = "2",
+                numCode = "011",
+                charCode = "USD",
+                nominal = 1,
+                name = "Американский доллар",
+                value = 90.11,
+                previous = 90.10
+            )
         )
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CurrencyCardPreview2(){
-    CurrencyCard(
-        currency = Currency(
-            id = "2",
-            numCode = "011",
-            charCode = "USD",
-            nominal = 1,
-            name = "Американский доллар",
-            value = 90.11,
-            previous = 90.11
-        )
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CurrencyCardPreview3(){
-    CurrencyCard(
-        currency = Currency(
-            id = "2",
-            numCode = "011",
-            charCode = "USD",
-            nominal = 1,
-            name = "Американский доллар",
-            value = 90.11,
-            previous = 92.3
-        )
-    )
+    }
 }
