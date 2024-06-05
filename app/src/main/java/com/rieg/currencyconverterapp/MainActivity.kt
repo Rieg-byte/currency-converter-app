@@ -16,7 +16,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CurrencyConverterAppTheme {
+            val mainActivityViewModel: MainActivityViewModel = hiltViewModel()
+            val mainActivityUiState by mainActivityViewModel.mainActivityUiState.collectAsState()
+            CurrencyConverterAppTheme(darkTheme = shouldUseDarkTheme(mainActivityUiState)) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
