@@ -7,8 +7,9 @@
     <string name="converter">Конвертер</string>
     <string name="settings_dismiss_settings_dialog_button_text">Ок</string>
     <string name="settings_title">Настройки</string>
-    <string name="setting_theme_mode_system">Системная</string>
-    <string name="setting_theme_mode_light">Светлая</string>
-    <string name="setting_theme_mode_dark">Тёмная</string>
-    <string name="setting_theme_mode_title">Тема</string>
+    <string name="settings_theme_mode_system">Системная</string>
+    <string name="settings_theme_mode_light">Светлая</string>
+    <string name="settings_theme_mode_dark">Тёмная</string>
+    <string name="settings_theme_mode_title">Тема</string>
+    <string name="settings_loading">Загрузка...</string>
 </resources>
