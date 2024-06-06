@@ -1,5 +1,9 @@
 package com.rieg.currencyconverterapp.presentation.settings
 
-data class SettingsUiState(
-    val themeMode: String
-)
+
+sealed interface SettingsUiState {
+    data object Loading: SettingsUiState
+    data class Success(
+        val themeMode: String
+    ): SettingsUiState
+}

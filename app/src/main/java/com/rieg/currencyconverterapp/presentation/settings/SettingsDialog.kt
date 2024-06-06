@@ -1,5 +1,6 @@
 package com.rieg.currencyconverterapp.presentation.settings
 
+import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,15 +26,17 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rieg.currencyconverterapp.R
 import com.rieg.currencyconverterapp.domain.models.ThemeMode
+import com.rieg.currencyconverterapp.ui.theme.CurrencyConverterAppTheme
 
 @Composable
 fun SettingsDialog(
     onDismiss: () -> Unit,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
-    val settingsUiState by settingsViewModel.settingsUiState.collectAsState()
+    val settingsUiState by settingsViewModel.settingsUiState.collectAsStateWithLifecycle()
     SettingsDialog(
         settingsUiState = settingsUiState,
         onDismiss = onDismiss,
@@ -59,10 +61,20 @@ private fun SettingsDialog(
         text = {
             HorizontalDivider()
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                ThemeModePanel(
-                    themeMode = settingsUiState.themeMode,
-                    onChangeModeTheme = onChangeModeTheme
-                )
+                when(settingsUiState) {
+                    is SettingsUiState.Loading -> {
+                        Text(
+                            text = stringResource(id = R.string.settings_loading),
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                    is SettingsUiState.Success -> {
+                        ThemeModePanel(
+                            themeMode = settingsUiState.themeMode,
+                            onChangeModeTheme = onChangeModeTheme
+                        )
+                    }
+                }
             }
         },
         onDismissRequest = onDismiss,
@@ -87,7 +99,7 @@ fun ThemeModePanel(
 ) {
     Column {
         Text(
-            text = stringResource(id = R.string.setting_theme_mode_title),
+            text = stringResource(id = R.string.settings_theme_mode_title),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(8.dp)
         )
@@ -95,17 +107,17 @@ fun ThemeModePanel(
             modifier = Modifier.selectableGroup()
         ) {
             ThemeModeChooser(
-                text = stringResource(id = R.string.setting_theme_mode_system),
+                text = stringResource(id = R.string.settings_theme_mode_system),
                 selected = themeMode == ThemeMode.SYSTEM.name,
                 onClick = { onChangeModeTheme(ThemeMode.SYSTEM) }
             )
             ThemeModeChooser(
-                text = stringResource(id = R.string.setting_theme_mode_light),
+                text = stringResource(id = R.string.settings_theme_mode_light),
                 selected = themeMode == ThemeMode.LIGHT.name,
                 onClick = { onChangeModeTheme(ThemeMode.LIGHT) }
             )
             ThemeModeChooser(
-                text = stringResource(id = R.string.setting_theme_mode_dark),
+                text = stringResource(id = R.string.settings_theme_mode_dark),
                 selected = themeMode == ThemeMode.DARK.name,
                 onClick = { onChangeModeTheme(ThemeMode.DARK) }
             )
@@ -139,10 +151,29 @@ fun ThemeModeChooser(
     }
 }
 
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(showBackground = true)
 @Composable
-private fun SettingsDialogPreview() {
-    SettingsDialog(settingsUiState = SettingsUiState(themeMode = "LIGHT"), onDismiss = { /*TODO*/ }) {
-        
+private fun SettingsDialogSuccessPreview() {
+    CurrencyConverterAppTheme {
+        SettingsDialog(
+            settingsUiState = SettingsUiState.Success(themeMode = "LIGHT"),
+            onDismiss = { /*TODO*/ },
+            onChangeModeTheme = { /*TODO*/ }
+        )
     }
 }
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true)
+@Composable
+private fun SettingsDialogLoadingPreview() {
+    CurrencyConverterAppTheme {
+        SettingsDialog(
+            settingsUiState = SettingsUiState.Loading,
+            onDismiss = { /*TODO*/ },
+            onChangeModeTheme = { /*TODO*/ }
+        )
+    }
+}
+

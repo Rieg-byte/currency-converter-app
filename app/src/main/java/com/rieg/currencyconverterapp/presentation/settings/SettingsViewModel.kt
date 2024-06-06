@@ -16,11 +16,11 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class SettingsViewModel @Inject constructor(private val settingsRepository: SettingsRepository): ViewModel() {
     val settingsUiState: StateFlow<SettingsUiState> = settingsRepository.themeMode.map { themeMode ->
-        SettingsUiState(themeMode = themeMode)
+        SettingsUiState.Success(themeMode = themeMode)
     }.stateIn(
         scope = viewModelScope,
         started = WhileSubscribed(5.seconds.inWholeMilliseconds),
-        initialValue = SettingsUiState(themeMode = ThemeMode.SYSTEM.name)
+        initialValue = SettingsUiState.Loading
     )
 
     fun updateThemeMode(themeMode: ThemeMode) = viewModelScope.launch {
