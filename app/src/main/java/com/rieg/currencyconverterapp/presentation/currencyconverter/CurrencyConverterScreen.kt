@@ -1,5 +1,6 @@
 package com.rieg.currencyconverterapp.presentation.currencyconverter
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -26,9 +32,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rieg.currencyconverterapp.ui.components.ErrorScreen
 import com.rieg.currencyconverterapp.ui.components.LoadingScreen
+import com.rieg.currencyconverterapp.ui.theme.CurrencyConverterAppTheme
 
 @Composable
 fun CurrencyConverterScreen(
@@ -36,27 +45,34 @@ fun CurrencyConverterScreen(
 ) {
     val currencyConverterUiState by currencyConverterViewModel.currencyConverterUiState.collectAsState()
     CurrencyConverterBody(
-        currencyConverterViewModel = currencyConverterViewModel,
-        currencyConverterUiState = currencyConverterUiState
+        currencyConverterUiState = currencyConverterUiState,
+        onClickRepeat = currencyConverterViewModel::onRepeat,
+        onClickUpdateValue = currencyConverterViewModel::onUpdateCurrencyValue,
+        onSwapConverter = currencyConverterViewModel::onSwapConverter
     )
 }
 
 @Composable
 fun CurrencyConverterBody(
     modifier: Modifier = Modifier,
-    currencyConverterViewModel: CurrencyConverterViewModel,
-    currencyConverterUiState: CurrencyConverterUiState
+    currencyConverterUiState: CurrencyConverterUiState,
+    onClickRepeat: () -> Unit,
+    onClickUpdateValue: (String) -> Unit,
+    onSwapConverter: () -> Unit
 ){
     Column(modifier = modifier.fillMaxSize()) {
         when(currencyConverterUiState) {
             is CurrencyConverterUiState.Loading -> LoadingScreen()
-            is CurrencyConverterUiState.Error -> ErrorScreen(onRepeat = currencyConverterViewModel::repeat)
+            is CurrencyConverterUiState.Error -> ErrorScreen(onClickRepeat = onClickRepeat)
             is CurrencyConverterUiState.Success -> CurrencyConverter(
-                fromCurrency = currencyConverterUiState.fromCurrency,
-                fromValue = currencyConverterUiState.fromValue,
-                toCurrency = currencyConverterUiState.toCurrency,
-                toValue = currencyConverterUiState.toValue,
-                onValueChange = currencyConverterViewModel::updateValue
+                inputCurrencyLabel = currencyConverterUiState.inputCurrencyLabel,
+                inputCurrency = currencyConverterUiState.inputCurrency,
+                inputCurrencyValue = currencyConverterUiState.inputValue,
+                outputCurrencyLabel = currencyConverterUiState.outputCurrencyLabel,
+                outputCurrency = currencyConverterUiState.outputCurrency,
+                outputCurrencyValue = currencyConverterUiState.outputValue,
+                onValueChange = onClickUpdateValue,
+                onSwapConverter = onSwapConverter,
             )
         }
     }
@@ -64,43 +80,59 @@ fun CurrencyConverterBody(
 @Composable
 fun CurrencyConverter(
     modifier: Modifier = Modifier,
-    fromCurrency: String,
-    fromValue: String,
-    toCurrency: String,
-    toValue: String,
-    onValueChange: (String) -> Unit
+    inputCurrencyLabel: String,
+    inputCurrency: String,
+    outputCurrency: String,
+    inputCurrencyValue: String,
+    outputCurrencyLabel: String,
+    outputCurrencyValue: String,
+    onValueChange: (String) -> Unit,
+    onSwapConverter: () -> Unit
 ) {
     Column(
         modifier = modifier.padding(8.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
             CurrencyCard(
                 modifier = Modifier.weight(1f),
-                value = fromCurrency
+                value = inputCurrency
             )
             Spacer(modifier = Modifier.width(20.dp))
             CurrencyField(
                 modifier = Modifier.weight(2f),
-                value = fromValue,
-                onValueChange = onValueChange
+                value = inputCurrencyValue,
+                onValueChange = onValueChange,
+                label = inputCurrencyLabel
             )
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                modifier = Modifier.weight(1f),
+                onClick = onSwapConverter
+            ) {
+                Icon(imageVector = Icons.Rounded.SwapVert, contentDescription = null)
+            }
+            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.weight(2f))
+        }
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
             CurrencyCard(
                 modifier = Modifier.weight(1f),
-                value = toCurrency
+                value = outputCurrency
             )
             Spacer(modifier = Modifier.width(20.dp))
             CurrencyField(
                 modifier = Modifier.weight(2f),
-                value = toValue,
+                value = outputCurrencyValue,
+                label = outputCurrencyLabel,
                 enabled = false
             )
         }
@@ -120,7 +152,10 @@ fun CurrencyCard(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = value)
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleLarge,
+            )
         }
     }
 }
@@ -129,6 +164,7 @@ fun CurrencyField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit = {},
+    label: String,
     enabled: Boolean = true,
 ) {
     val focusManager = LocalFocusManager.current
@@ -136,6 +172,11 @@ fun CurrencyField(
         modifier = modifier.height(60.dp),
         value = value,
         onValueChange = onValueChange,
+        label = { Text(
+            text = label,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        ) },
         shape = RoundedCornerShape(15.dp),
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -154,4 +195,23 @@ fun CurrencyField(
         ),
         enabled = enabled
     )
+}
+
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true)
+@Composable
+fun CurrencyConverterPreview() {
+    CurrencyConverterAppTheme {
+        CurrencyConverter(
+            inputCurrencyLabel = "Доллар США",
+            inputCurrency = "USD",
+            outputCurrencyLabel = "Российский рубль",
+            outputCurrency = "RUB",
+            inputCurrencyValue = "1",
+            outputCurrencyValue = "82.21",
+            onValueChange = {},
+            onSwapConverter = {}
+        )
+    }
 }
