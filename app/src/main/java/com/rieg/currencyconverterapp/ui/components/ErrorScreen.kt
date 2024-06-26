@@ -16,7 +16,7 @@ import com.rieg.currencyconverterapp.R
 
 @Composable
 fun ErrorScreen(
-    onRepeat: () -> Unit,
+    onClickRepeat: () -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -26,7 +26,7 @@ fun ErrorScreen(
     ) {
         Text(text = stringResource(id = R.string.error))
         Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = onRepeat) {
+        Button(onClick = onClickRepeat) {
             Text(text = stringResource(id = R.string.repeat))
         }
     }
