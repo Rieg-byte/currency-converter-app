@@ -165,18 +165,31 @@ fun CurrencyField(
     value: String,
     onValueChange: (String) -> Unit = {},
     label: String,
+    maxLength: Int = 14,
     enabled: Boolean = true,
 ) {
     val focusManager = LocalFocusManager.current
     TextField(
         modifier = modifier.height(60.dp),
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = { inputValue ->
+            if (inputValue.length != maxLength) {
+                val filteredValue = inputValue.filter { char ->
+                    char.isDigit() || char == '.'
+                }
+                val parts = filteredValue.split(".")
+                if (parts.size <= 2 && (parts.size < 2 || parts[1].length <= 2)) {
+                    onValueChange(filteredValue)
+                }
+            }
+        },
         label = { Text(
             text = label,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         ) },
+        placeholder = {
+            Text(text = "0") },
         shape = RoundedCornerShape(15.dp),
         singleLine = true,
         keyboardOptions = KeyboardOptions.Default.copy(

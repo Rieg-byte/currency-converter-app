@@ -35,14 +35,14 @@ class CurrencyConverterViewModel @Inject constructor(
         getCurrency(charCode)
     }
 
-    fun onUpdateCurrencyValue(value: String) {
-        val inputValue = value.toDoubleOrNull() ?: 0.0
-        val outputValue = convert(inputValue)
+    fun onUpdateCurrencyValue(inputValue: String) {
+        val amount = inputValue.toDoubleOrNull() ?: 0.0
+        val convertedAmount = convert(amount)
         val currentState = _currencyConverterUiState.value as? CurrencyConverterUiState.Success
         if (currentState != null) {
             _currencyConverterUiState.value = currentState.copy(
-                inputValue = value,
-                outputValue = outputValue.toNormalFormat()
+                inputValue = inputValue,
+                outputValue = convertedAmount.toNormalFormat()
             )
         }
     }
@@ -54,15 +54,15 @@ class CurrencyConverterViewModel @Inject constructor(
             if (result != null) {
                 conversionRate = result.value
                 nominal = result.nominal
-                val inputValue = nominal.toString()
-                val outputValue = convert(inputValue.toDouble()).toNormalFormat()
+                val inputValue = nominal.toDouble()
+                val outputValue = convert(inputValue)
                 _currencyConverterUiState.value = CurrencyConverterUiState.Success(
                     inputCurrencyLabel = result.name,
                     inputCurrency = charCode,
-                    inputValue = inputValue,
+                    inputValue = inputValue.toNormalFormat(),
                     outputCurrencyLabel = "Российский рубль",
                     outputCurrency = "RUB",
-                    outputValue = outputValue
+                    outputValue = outputValue.toNormalFormat()
                 )
             } else {
                 _currencyConverterUiState.value = CurrencyConverterUiState.Error
